@@ -33,13 +33,13 @@ func (yml *YMLConfig) readConfigYMLFile() bool {
 		return false
 	}
 
-	path := strings.Split(dir, "/")
+	// path := strings.Split(dir, "/")
 
-	dir = strings.Join(path[:len(path)-2], "/")
+	// dir = strings.Join(path[:len(path)-2], "/")
 
-	configFilePath := dir + "/config.yml"
+	// configFilePath := dir + "/config.yml"
 
-	data, err := os.ReadFile(configFilePath)
+	data, err := os.ReadFile(dir + "/config.yml")
 	if err != nil {
 		fmt.Println("unable to read config.yml file, error:", err)
 		return false
