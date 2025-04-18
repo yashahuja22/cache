@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: gcache-service
+    runtime: go
+    plan: free
+    buildCommand: go build -o gcache ./cmd/gcache
+    startCommand: ./gcache
+    autoDeploy: true
+    envVars:
+      - key: PORT
+        value: 10000
