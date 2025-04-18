@@ -3,8 +3,10 @@ package config
 import (
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 
+	"github.com/joho/godotenv"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
@@ -12,9 +14,10 @@ import (
 )
 
 type YMLConfig struct {
-	LogLevel string `yaml:"logLevel"`
-	LogFile  string `yaml:"logFile"`
-	Port     string `yaml:"port"`
+	LogLevel  string `yaml:"logLevel"`
+	LogFile   string `yaml:"logFile"`
+	Port      string `yaml:"port"`
+	CacheSize string `yaml:"cache-size"`
 }
 
 type appLogger struct {
@@ -22,8 +25,10 @@ type appLogger struct {
 }
 
 var (
-	Logger *appLogger
-	Port   string
+	Logger    *appLogger
+	Port      string
+	CacheSize = 10
+	err       error
 )
 
 func (yml *YMLConfig) readConfigYMLFile() bool {
@@ -32,12 +37,6 @@ func (yml *YMLConfig) readConfigYMLFile() bool {
 		fmt.Println("unable to fetch current directory, error:", err)
 		return false
 	}
-
-	// path := strings.Split(dir, "/")
-
-	// dir = strings.Join(path[:len(path)-2], "/")
-
-	// configFilePath := dir + "/config.yml"
 
 	data, err := os.ReadFile(dir + "/config.yml")
 	if err != nil {
@@ -109,6 +108,23 @@ func LoadCommon() bool {
 	Logger = initLogger(y.LogLevel, y.LogFile)
 
 	Port = y.Port
+
+	CacheSize, err = strconv.Atoi(y.CacheSize)
+	if err != nil {
+		Logger.Log.Sugar().Errorf("cache size is not numeric in config file, hence taking default size %d", CacheSize)
+	} else {
+		Logger.Log.Sugar().Infof("cache size is %d", CacheSize)
+	}
+
+	err := godotenv.Load()
+	if err != nil {
+		Logger.Log.Error("unable to load .env file")
+	}
+
+	Port = os.Getenv("PORT")
+	if Port == "" {
+		Port = "10000"
+	}
 
 	return true
 }

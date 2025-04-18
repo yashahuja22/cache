@@ -1,3 +1,0 @@
-logLevel : info
-logFile : logs/updater_<<instanceId>>.log
-port: 9000

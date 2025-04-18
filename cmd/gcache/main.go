@@ -1,22 +1,21 @@
 package main
 
 import (
+	"fmt"
 	"gcache/pkg/config"
 	"gcache/pkg/routes"
-	"os"
 )
 
 func main() {
+	fmt.Println("Starting gcache..")
+
 	if !config.LoadCommon() {
 		return
 	}
 
+	config.Logger.Log.Info("gcache started..")
+
 	r := routes.SetUpRoutes()
 
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "10000"
-	}
-
-	r.Run(":" + port)
+	r.Run(":" + config.Port)
 }

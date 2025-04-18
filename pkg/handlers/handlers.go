@@ -50,9 +50,13 @@ func (s *handlers) GetHandler(c *gin.Context) {
 	}
 	value, ok := s.store.JSONGet(key)
 	if !ok {
+		config.Logger.Log.Sugar().Errorf("didn't got data for key %s", key)
 		c.JSON(http.StatusNotFound, gin.H{"error": "key not found"})
 		return
 	}
+
+	config.Logger.Log.Sugar().Infof("got data for key %s", key)
+
 	c.Data(http.StatusOK, "application/json", value)
 }
 
@@ -63,8 +67,10 @@ func (s *handlers) DelHandler(c *gin.Context) {
 		return
 	}
 	if s.store.JSONDel(key) {
+		config.Logger.Log.Sugar().Infof("%s deleted", key)
 		c.JSON(http.StatusOK, gin.H{"status": "deleted"})
 	} else {
+		config.Logger.Log.Sugar().Errorf("%s key not deleted. not found")
 		c.JSON(http.StatusNotFound, gin.H{"error": "key not found"})
 	}
 }
